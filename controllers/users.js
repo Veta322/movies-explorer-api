@@ -87,7 +87,9 @@ module.exports.updateProfile = (req, res, next) => {
       });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.code === 11000) {
+        next(new Conflict('Данная почта уже зарегистрирована :( '));
+      } else if (err.name === 'ValidationError') {
         next(new BadRequest('Некорректные данные при обновлении профиля :('));
       } else {
         next(err);
