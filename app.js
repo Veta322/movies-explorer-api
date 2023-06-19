@@ -19,7 +19,8 @@ const allowedCors = [
   'https://praktikum.tk',
   'http://praktikum.tk',
   'localhost:3000',
-  'veta.diploma.nomoredomains.rocks',
+  'https://domain.veta.diploma.nomoredomains.work',
+  'http://domain.veta.diploma.nomoredomains.work',
 ];
 
 app.use((req, res, next) => {
