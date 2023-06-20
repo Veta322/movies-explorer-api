@@ -5,6 +5,7 @@ const { routes } = require('./routes/index');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { errorHandler } = require('./middlewares/errorHandler');
 const NotFound = require('./utils/errors/NotFound');
+const cors = require('cors');
 
 const { PORT = 3000 } = process.env;
 
@@ -23,21 +24,19 @@ const allowedCors = [
   'http://domain.veta.diploma.nomoredomains.work',
 ];
 
-app.use((req, res, next) => {
-  const { origin } = req.headers;
-  if (allowedCors.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-  }
-  const { method } = req;
-  const DEFAULT_ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE';
-  const requestHeaders = req.headers['access-control-request-headers'];
-  if (method === 'OPTIONS') {
-    res.header('Access-Control-Allow-Methods', DEFAULT_ALLOWED_METHODS);
-    res.header('Access-Control-Allow-Headers', requestHeaders);
-    return res.end();
-  }
-  return next();
-});
+app.use(
+  cors({
+    credentials: true,
+    origin(origin, callback) {
+      if (corsAllowed.includes(origin) || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+  }),
+);
+app.options('*', cors());
 
 app.use(requestLogger);
 app.use(routes);
