@@ -28,7 +28,7 @@ app.use(
   cors({
     credentials: true,
     origin(origin, callback) {
-      if (corsAllowed.includes(origin) || !origin) {
+      if (allowedCors.includes(origin) || !origin) {
         callback(null, true);
       } else {
         callback(new Error('Not allowed by CORS'));
