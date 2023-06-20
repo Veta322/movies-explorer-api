@@ -1,16 +1,20 @@
+const { errors } = require('celebrate');
 const express = require('express');
 const mongoose = require('mongoose');
-require('dotenv').config();
 const { routes } = require('./routes/index');
-const { errors } = require('celebrate');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
+const { errorHandler } = require('./middlewares/errorHandler');
+const NotFound = require('./utils/errors/NotFound');
 
 const { PORT = 3000 } = process.env;
+
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
+mongoose.connect('mongodb://127.0.0.1:27017/bitfilmsdb');
+
 const allowedCors = [
   'https://praktikum.tk',
   'http://praktikum.tk',
@@ -35,6 +39,11 @@ app.use((req, res, next) => {
   return next();
 });
 
+app.use(requestLogger);
 app.use(routes);
+app.use('*', (req, res, next) => { next(new NotFound('Запрашиваемый адрес не найден :(')); });
+app.use(errorLogger);
 app.use(errors());
+app.use(errorHandler);
+
 app.listen(PORT);
